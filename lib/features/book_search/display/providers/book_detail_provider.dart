@@ -25,7 +25,7 @@ class BookDetailProvider extends ChangeNotifier {
     isSearched = true;
     notifyListeners();
 
-    Either<Failure, BookDetailResult?>? result = await DetailBook(_bookDetailRepository).call(WithParams(params: {'book_id': bookId}));
+    Either<Failure, BookDetailResult?>? result = await DetailBook(_bookDetailRepository)(WithParams(params: {'book_id': bookId}));
     result?.fold((l) => null, (r){
       _bookDetailResult = r;
     });

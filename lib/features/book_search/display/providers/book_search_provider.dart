@@ -37,7 +37,7 @@ class BookSearchProvider extends ChangeNotifier {
     if (_currentPage != null) {
       params.params['page'] = _currentPage;
     }
-    Either<Failure, BookSearchResult?>? result = await SearchBook(_searchRepository).call(params);
+    Either<Failure, BookSearchResult?>? result = await SearchBook(_searchRepository)(params);
     result?.fold((l) {
       _currentPage = null;
       _totalPage = null;
