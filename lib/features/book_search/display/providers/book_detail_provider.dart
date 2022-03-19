@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:it_book_store/features/book_search/domain/usecases/detail_book.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecases.dart';
@@ -24,7 +25,7 @@ class BookDetailProvider extends ChangeNotifier {
     isSearched = true;
     notifyListeners();
 
-    Either<Failure, BookDetailResult?>? result = await _bookDetailRepository.getBookDetail(WithParams(params: {'book_id': bookId}));
+    Either<Failure, BookDetailResult?>? result = await DetailBook(_bookDetailRepository).call(WithParams(params: {'book_id': bookId}));
     result?.fold((l) => null, (r){
       _bookDetailResult = r;
     });

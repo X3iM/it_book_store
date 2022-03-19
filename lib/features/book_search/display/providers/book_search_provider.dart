@@ -5,10 +5,11 @@ import 'package:it_book_store/core/errors/failures.dart';
 import 'package:it_book_store/core/usecases/usecases.dart';
 import 'package:it_book_store/features/book_search/data/datasource/book_search_remote_data_source.dart';
 import 'package:it_book_store/features/book_search/domain/repositories/book_search_repository.dart';
+import 'package:it_book_store/features/book_search/domain/usecases/search_book.dart';
 
-import '../../data/models/book_search_model.dart';
 import '../../data/repositories/book_search_repository.dart';
 import '../../domain/entities/book_search_result.dart';
+
 
 class BookSearchProvider extends ChangeNotifier {
   final Dio _dio = Dio();
@@ -36,7 +37,7 @@ class BookSearchProvider extends ChangeNotifier {
     if (_currentPage != null) {
       params.params['page'] = _currentPage;
     }
-    Either<Failure, BookSearchResult?>? result = await _searchRepository.searchBook(params);
+    Either<Failure, BookSearchResult?>? result = await SearchBook(_searchRepository).call(params);
     result?.fold((l) {
       _currentPage = null;
       _totalPage = null;
