@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:it_book_store/core/utils/constants.dart';
 
 import '../../../../core/widgets/icon_shadow.dart';
 
@@ -22,11 +24,7 @@ class ItBookAppBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       leading: leading ?? (ModalRoute.of(context)!.canPop ? _ArrowBack() : null),
       actions: actions,
-      title: Text(title, style: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontFamily: 'GothamRounded',
-          fontWeight: FontWeight.w600),),
+      title: Text(title, style: Get.textTheme.headline1,),
       // centerTitle: true,
     );
   }
@@ -37,8 +35,8 @@ class _ArrowBack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () => Navigator.pop(context),
-      splashRadius: 28,
+      onPressed: () => Get.back(),
+      splashRadius: radius,
       icon: const IconShadow(
         icon: Icon(
           Icons.arrow_back_ios_rounded,

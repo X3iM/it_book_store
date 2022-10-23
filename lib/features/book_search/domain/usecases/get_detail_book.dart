@@ -5,10 +5,10 @@ import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecases.dart';
 import '../repositories/book_detail_repository.dart';
 
-class DetailBook {
+class GetDetailsBook {
   final BookDetailRepository repository;
 
-  DetailBook(this.repository);
+  GetDetailsBook(this.repository);
 
   Future<Either<Failure, BookDetailResult?>?> call(Params params) async {
     return await repository.getBookDetail(params);

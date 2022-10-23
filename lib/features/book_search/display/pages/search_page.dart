@@ -1,124 +1,138 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:it_book_store/core/utils/constants.dart';
 import 'package:it_book_store/core/widgets/input_widgets.dart';
-import 'package:it_book_store/features/book_search/display/providers/book_detail_provider.dart';
-import 'package:it_book_store/features/book_search/display/providers/book_search_provider.dart';
+import 'package:it_book_store/features/book_search/display/bloc/book_bloc/book_search_bloc.dart';
+import 'package:it_book_store/features/book_search/display/bloc/book_bloc/book_state.dart';
+import 'package:it_book_store/features/book_search/display/controllers/book_detail_provider.dart';
 import 'package:it_book_store/features/book_search/display/widgets/custom_card.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/app_theme.dart';
+import '../../../../core/routes/routes.dart';
+import '../../domain/entities/book.dart';
+import '../controllers/book_search_provider.dart';
 import '../widgets/it_book_app_bar.dart';
 import '../widgets/paginate_widget.dart';
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends GetView<BookSearchController> {
   const SearchPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    BookSearchProvider provider = context.read<BookSearchProvider>();
-    Size size = MediaQuery.of(context).size;
-
-    return Theme(
-      data: ThemeData.light(),
-      child: Listener(
-        onPointerDown: (_) {
-          if (provider.searchFocusNode.hasFocus) {
-            provider.searchFocusNode.unfocus();
-          }
-        },
-        child: Scaffold(
-          backgroundColor: Colors.grey.shade300,
-          body: SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                ItBookAppBar(title: 'IT Book',),
-                SizedBox(height: size.height * .01),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: NeumorphismInputWidget(
-                    controller: provider.searchController,
-                    textInputAction: TextInputAction.search,
-                    onEditingComplete: () {
-                      provider.newSearch();
-                      provider.searchBook();
+    return Listener(
+      onPointerDown: (_) {
+        if (controller.searchFocusNode.hasFocus) {
+          controller.searchFocusNode.unfocus();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade300,
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              ItBookAppBar(title: 'app_title'.tr,),
+              SizedBox(height: smallVerticalPadding,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: NeumorphismInputWidget(
+                  controller: controller.searchController,
+                  textInputAction: TextInputAction.search,
+                  onEditingComplete: () {
+                    controller.newSearch();
+                    controller.searchBook();
+                  },
+                  focusNode: controller.searchFocusNode,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      controller.newSearch();
+                      controller.searchBook();
                     },
-                    focusNode: provider.searchFocusNode,
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        provider.newSearch();
-                        provider.searchBook();
-                      },
-                      child: const Icon(Icons.search_rounded),
-                    ),
-                    hint: 'Search...',
+                    child: const Icon(Icons.search_rounded),
                   ),
+                  hint: 'search'.tr,
                 ),
-                // SizedBox(height: size.height * .02),
-                Expanded(
-                  child: Consumer<BookSearchProvider>(
-                    builder: (context, provider, child) {
+              ),
+              // SizedBox(height: size.height * .02),
+              Expanded(
+                child: BlocBuilder<BookSearchBloc, BookState>(
+                  bloc: controller.bookSearchBloc,
+                  builder: (context, state) {
+                    if (state is Loading) {
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    } else if (state is LoadedSearchedBooks && state.bookSearchResult.books?.isNotEmpty == true) {
                       return Column(
-                        children: [
-                          if (provider.isSearched)
-                            const Expanded(child: Center(child: CircularProgressIndicator.adaptive(),))
-                          else if (provider.bookSearchModel?.books?.isNotEmpty == true)
+                          children: [
                             Expanded(
                               child: ListView.builder(
-                                itemCount: provider.bookSearchModel!.books!.length,
-                                itemBuilder: (context, index) => bookCard(provider, index, context, size),
+                                itemCount: state.bookSearchResult.books!.length,
+                                itemBuilder: (context, index) => bookCard(state.bookSearchResult.books![index]),
                               ),
-                            )
-                          else if (provider.bookSearchModel?.books?.isEmpty == true)
-                            const Expanded(child: Center(child: Text('Books not found'),))
-                          else if (!provider.isSearched && provider.bookSearchModel == null)
-                                const Expanded(child: Center(child: Text('Search IT books'),)),
-                          if (provider.currentPage != null)
-                            PaginateWidget(
-                              currentPage: provider.currentPage!,
-                              maxPage: provider.totalPage!,
-                              nextPage: () {
-                                provider.newPage();
-                              },
-                              prevPage: () {
-                                provider.prevPage();
-                              },
-                              size: size,
                             ),
-                        ]
+                            GetBuilder<BookSearchController>(
+                              id: BookSearchController.changedPage,
+                              builder: (controller) {
+                                if (controller.currentPage != null) {
+                                  return PaginateWidget(
+                                    currentPage: controller.currentPage!,
+                                    maxPage: controller.totalPage!,
+                                    nextPage: () {
+                                      controller.newPage();
+                                    },
+                                    prevPage: () {
+                                      controller.prevPage();
+                                    },
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
+                          ]
                       );
                       // return const Expanded(child: Center(child: Text('Search IT books'),));
-                    },
-                  ),
+                    } else if (state is Error) {
+                      return Center(
+                        child: Text(state.message,
+                          style: Get.textTheme.headline1,),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
-                SizedBox(height: size.height * .05),
-              ],
-            ),
+              ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + verticalPadding),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget bookCard(BookSearchProvider provider, int index, BuildContext context, Size size) {
+  Widget bookCard(Book book) {
     return CustomCard(
       onTap: () {
-        context.read<BookDetailProvider>().getBookDetail(bookId: provider.bookSearchModel!.books![index].isbn13);
-        Navigator.of(context).pushNamed('book_detail_page');
+        Get.find<BookDetailController>().getBookDetail(bookId: book.isbn13);
+        Get.toNamed(Routes.BOOK_DETAILS_SCREEN);
       },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.network(
-                  provider.bookSearchModel!.books![index].image,
-                  width: size.width * .4,
-                  height: 180,
+                  book.image,
+                  width: Get.width * .4,
+                  height: Get.height * .2,
                   fit: BoxFit.fill,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return SizedBox(
-                        width: size.width * .4,
-                        height: size.height * .3,
-                        child: AppWidgets.loader
+                        width: Get.width * .4,
+                        height: Get.height * .2,
+                        child: const Center(child: CircularProgressIndicator.adaptive(),),
                     );
                   },
                 ),
@@ -126,24 +140,21 @@ class SearchPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
+                      SizedBox(height: verticalPadding),
                       Text(
-                        provider.bookSearchModel!.books![index].title,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16
-                        ),
+                        book.title,
+                        style: Get.textTheme.bodyText1,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        provider.bookSearchModel!.books![index].subtitle,
+                        book.subtitle,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                       ),
                       const SizedBox(height: 10),
-                      Text(provider.bookSearchModel!.books![index].price),
+                      Text(book.price, style: Get.textTheme.bodyText1),
                     ],
                   ),
                 ),

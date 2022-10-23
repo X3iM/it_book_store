@@ -1,4 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+
+import '../errors/failures.dart';
 
 abstract class Params extends Equatable {
   Map<String, dynamic>? getParams();
@@ -25,4 +28,8 @@ class WithParams extends Params {
   @override
   Map<String, dynamic>? getParams() => params;
 
+}
+
+abstract class UseCase<Type, Params> {
+  Future<Either<Failure, Type>> call(Params params);
 }

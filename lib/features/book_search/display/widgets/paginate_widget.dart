@@ -1,104 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/utils/constants.dart';
+import '../../../../core/utils/theme.dart';
 
 class PaginateWidget extends StatelessWidget {
   final int currentPage;
   final int maxPage;
   final Function prevPage;
   final Function nextPage;
-  final Size size;
-  final double? marginTop;
 
   const PaginateWidget({
     required this.currentPage,
     required this.maxPage,
     required this.prevPage,
     required this.nextPage,
-    required this.size,
-    this.marginTop});
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-      margin: marginTop != null ? EdgeInsets.only(top: marginTop!) : EdgeInsets.zero,
-      height: 50,
-      width: size.width - 24,
-      decoration: const ShapeDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xffd2d2d2),
-            Color(0xfff5f5f5)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.0, 0.4],
-          tileMode: TileMode.clamp,
-        ),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+      margin: EdgeInsets.only(top: verticalPadding),
+      height: Get.height * .06,
+      width: Get.width - 24,
+      decoration: ShapeDecoration(
+        gradient: primaryGradient,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          borderRadius: BorderRadius.all(Radius.circular(radius)),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () async {
-              await prevPage();
+            onTap: () {
+              prevPage();
             },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: currentPage > 1 ? Colors.black : Colors.grey,
-                  size: 14,
-                ),
-                const SizedBox(width: 8,),
-                Text(
-                  'PREV',
-                  style: TextStyle(
-                      color: currentPage > 1 ? Colors.black : Colors.grey,
-                      fontSize: 14,
-                      fontFamily: 'GothamRounded',
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
+            child: FittedBox(
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.arrow_back_ios_rounded,
+                    color: currentPage > 1 ? Get.theme.indicatorColor : Get.theme.highlightColor,
+                    size: smallIconSize,
+                  ),
+                  SizedBox(width: smallHorizontalPadding,),
+                  Text(
+                    'prev'.tr,
+                    style: Get.textTheme.bodyText1?.copyWith(
+                      color: currentPage > 1 ? Get.theme.indicatorColor : Get.theme.highlightColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          RichText(
+          FittedBox(
+            child: RichText(
               text: TextSpan(
-                  text: '$currentPage',
-                  style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600),
-                  children: [
-                    TextSpan(
-                        text: ' / $maxPage',
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'GothamRounded',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400)),
-                  ])),
+                text: '$currentPage',
+                style: Get.textTheme.bodyText1,
+                children: [
+                  TextSpan(text: ' / $maxPage', style: Get.textTheme.bodyText1,),
+                ],
+              ),
+            ),
+          ),
           GestureDetector(
             onTap: () async {
               await nextPage();
             },
-            child: Row(
-              children: [
-                Text(
-                  'NEXT',
-                  style: TextStyle(
-                      color: currentPage < maxPage ? Colors.black : Colors.grey,
-                      fontSize: 14,
-                      fontFamily: 'GothamRounded',
-                      fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(width: 8,),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: currentPage + 1 < maxPage ? Colors.black : Colors.grey,
-                  size: 14,
-                ),
-              ],
+            child: FittedBox(
+              child: Row(
+                children: [
+                  Text(
+                    'next'.tr,
+                    style: Get.textTheme.bodyText1?.copyWith(
+                      color: currentPage < maxPage ? Get.theme.indicatorColor : Get.theme.highlightColor,
+                    ),
+                  ),
+                  SizedBox(width: smallHorizontalPadding,),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: currentPage + 1 < maxPage ? Get.theme.indicatorColor : Get.theme.highlightColor,
+                    size: smallIconSize,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

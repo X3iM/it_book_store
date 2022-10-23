@@ -53,7 +53,7 @@ class _NoInternetWidget extends State<_NoInternetToast> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPersistentFrameCallback((timeStamp) async {
+    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) async {
       _check(await connectivity.checkConnectivity());
 
       subscription = connectivity.onConnectivityChanged.listen((ConnectivityResult result) {

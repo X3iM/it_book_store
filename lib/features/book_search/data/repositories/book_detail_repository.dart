@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:get/get.dart';
 import 'package:it_book_store/features/book_search/data/datasource/book_detail_remote_data_source.dart';
 
 
@@ -19,11 +20,11 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
       return Right(await bookDetailRemoteDataSource.getBookDetail(params));
     } on Exception catch (e) {
       if (e is ServerException) {
-        return Left(ServerFailure(errorMessage: 'server failure'));
+        return Left(ServerFailure(errorMessage: 'server_failure'.tr));
       } else if (e is ParamsException) {
-        return Left(ParamsFailure(errorMessage: 'parameters failure'));
+        return Left(ParamsFailure(errorMessage: 'parameters_failure'.tr));
       } else {
-        return Left(UnknownFailure(errorMessage: 'unknown failure'));
+        return Left(UnknownFailure(errorMessage: 'unknown_failure'.tr));
       }
     }
   }

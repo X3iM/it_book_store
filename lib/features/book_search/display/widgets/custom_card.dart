@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:it_book_store/core/utils/constants.dart';
 
 class CustomCard extends StatelessWidget {
   final Widget child;
@@ -13,9 +14,9 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+        margin: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: horizontalPadding),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(radius),
             color: Colors.grey.shade300,
             boxShadow: [
               const BoxShadow(
@@ -25,16 +26,17 @@ class CustomCard extends StatelessWidget {
               BoxShadow(
                   offset: const Offset(-10, -10),
                   color: Colors.white.withOpacity(0.85),
-                  blurRadius: 20)
-            ]),
+                  blurRadius: 20),
+            ],
+        ),
         child: Material(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(radius),
             color: onTap != null ? null : Colors.transparent,
             child: InkWell(
                 onTap: onTap,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(radius),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 16),
+                  padding: EdgeInsetsDirectional.only(end: horizontalPadding),
                   child: child,
                 )
             )

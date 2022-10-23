@@ -1,5 +1,7 @@
 import 'package:it_book_store/features/book_search/domain/entities/book.dart';
 
+import 'book_pdf.dart';
+
 class BookDetail extends Book {
   final String authors;
   final String publisher;
@@ -8,7 +10,7 @@ class BookDetail extends Book {
   final String year;
   final String rating;
   final String desc;
-  final List<String>? pdf;
+  final List<BookPDF>? pdf;
 
   const BookDetail({
     required String title,
