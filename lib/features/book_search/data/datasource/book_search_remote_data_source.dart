@@ -15,7 +15,7 @@ class BookSearchRemoteDataSourceImpl extends NetworkService implements BookSearc
   Future<BookSearchResultModel>? searchBook(Params params) async {
     if (params is WithParams) {
       final p = params.getParams();
-      String url = '/search/${p!['book_id']}';
+      String url = '/search/${p!['query']}';
       if (p['page'] != null) {
         url += '/${p['page']}';
       }
